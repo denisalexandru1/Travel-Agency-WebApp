@@ -45,7 +45,11 @@ const Search = styled('div')(({ theme }) => ({
     },
   }));
 
-function SearchField() {
+function SearchField({ onSearchChange }) {
+    const handleSearchChange = (event) => {
+        onSearchChange(event.target.value);
+    };
+
     return (
         <Search>
             <SearchIconWrapper>
@@ -54,6 +58,7 @@ function SearchField() {
             <StyledInputBase
                 placeholder="Search…"
                 inputProps={{ 'aria-label': 'search' }}
+                onChange={handleSearchChange}
             />
         </Search>
     );

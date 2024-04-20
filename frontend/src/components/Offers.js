@@ -10,7 +10,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Button, Typography } from '@mui/material';
 
-function Destinations() {
+function Offers() {
     const [startDate, setStartDate] = React.useState(null);
     const [endDate, setEndDate] = React.useState(null);
     const [destinationsArray, setDestinationsArray] = React.useState([]);
@@ -30,21 +30,12 @@ function Destinations() {
     };
 
     useEffect(() => {
-        // check if the path ends in /destinations and if it doesn't, get the string after /destinations/
-        // if the string is empty, set the searchValue to an empty string, otherwise set it to the string
-        const destinationLocation = window.location.pathname.endsWith("/destinations") ? "" : window.location.pathname.split("/destinations/")[1];
-
-        // get all the destinations from the database
-        fetch("http://localhost:5000/destination/get/" + destinationLocation)
+        fetch("http://localhost:5000/destination/get/special-offers")
             .then((response) => response.json())
             .then((data) => {
                 setDestinationsArray(data);
             })
     }, []);
-
-    // useEffect(() => {
-    //     console.log(destinationsArray);
-    // }, [destinationsArray]);
 
     return (
         <div>
@@ -107,4 +98,4 @@ function Destinations() {
     );
 }
 
-export default Destinations;
+export default Offers;
