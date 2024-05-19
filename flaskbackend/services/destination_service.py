@@ -1,5 +1,6 @@
 from flask import Flask
 from models.destination import Destination
+from services.reservation_service import ReservationService
 from database.db import db
 
 class DestinationService:
@@ -59,3 +60,12 @@ class DestinationService:
         db.session.add(destination)
         db.session.commit()
         return destination
+
+    def check_availability_between_dates(self, destination_id, start_date, end_date):
+        destination = Destination.query.get(destination_id)
+
+        # get how many reservations are already made for the destination between the given dates
+        reservations = ReservationService().get_reservations_by_destination_id_and_dates(destination_id, start_date, end_date)
+
+        # check if there are still slots available
+        return len(reservations) < destination.slots

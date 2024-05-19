@@ -26,6 +26,18 @@ def get_by_id(id):
     if destination is None:
         return jsonify({'error': 'Destination does not exist'}), 400
     return jsonify(destination.serialize()), 200
+
+@destination_controller.route('/check-availability', methods=['POST'])
+def check_availability_between_dates():
+    data = request.get_json()
+    destination_id = data['destination_id']
+    start_date = data['start_date']
+    end_date = data['end_date']
+
+    is_available = destination_service.check_availability_between_dates(destination_id, start_date, end_date)
+
+    return jsonify({'is_available': is_available}), 200
+
 @destination_controller.route('/add', methods=['POST'])
 def add_destination():
     data = request.get_json()
@@ -53,3 +65,4 @@ def delete_destination(id):
     if destination_service.delete_by_id(id):
         return jsonify({'message': 'Destination deleted'}), 200
     return jsonify({'error': 'Failed to delete'}), 400
+
