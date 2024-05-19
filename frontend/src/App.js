@@ -5,6 +5,7 @@ import SearchField from './components/SearchField';
 import Home from './components/Home';
 import Contact from './components/Contact';
 import Destinations from './components/Destinations';
+import Reservations from './components/Reservations';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import AgentView from './components/AgentView';
@@ -90,6 +91,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/destinations" element={<Destinations />} />
             <Route path="/destinations/:location" element={<Destinations />} />
+            <Route path="/reservations/:id" element={<Reservations />} />
             <Route path="/edit/:id" element={<EditDestination />} />
             <Route path="/add" element={<AddDestination />} />
             <Route path="/offers" element={<Offers />} />

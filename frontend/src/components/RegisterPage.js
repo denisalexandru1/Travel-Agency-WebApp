@@ -15,7 +15,7 @@ function RegisterPage() {
             return;
         }
 
-        fetch('http://localhost:5000/user/register', {
+        fetch('https://localhost:5000/user/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

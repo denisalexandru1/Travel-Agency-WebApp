@@ -8,7 +8,7 @@ function LoginPage() {
     const [password, setPassword] = React.useState('');
 
     const handleLogin = () => {
-        fetch('http://localhost:5000/user/login', {
+        fetch('https://localhost:5000/user/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

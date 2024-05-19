@@ -7,16 +7,16 @@ function AgentView() {
     const user = JSON.parse(localStorage.getItem('user'));
 
     useEffect(() => {
-        fetch('http://localhost:5000/destination/get')
+        fetch('https://localhost:5000/destination/get')
             .then(response => response.json())
             .then(data => setDestinations(data));
     }, []);
 
     const handleDelete = (id) => {
-        fetch('http://localhost:5000/destination/delete/' + id, {
+        fetch('https://localhost:5000/destination/delete/' + id, {
             method: 'DELETE'
         }).then(() => {
-            fetch('http://localhost:5000/destination/get')
+            fetch('https://localhost:5000/destination/get')
                 .then(response => response.json())
                 .then(data => setDestinations(data));
         }).then(() => {
@@ -25,13 +25,24 @@ function AgentView() {
     };
 
     const handleEdit = (id) => {
-        fetch('http://localhost:5000/destination/get/' + id)
+        fetch('https://localhost:5000/destination/get/' + id)
             .then(response => response.json())
             .then(data => {
                 localStorage.setItem('editDestination', JSON.stringify(data));
             })
         window.location.href = '/edit/' + id;
     };
+
+    const handleViewReservations = (id) => {
+        fetch('https://localhost:5000/reservation/get/' + id)
+            .then(response => response.json())
+            .then(data => {
+                localStorage.setItem('reservations', JSON.stringify(data));
+            })
+            .then(() => {
+                window.location.href = '/reservations/' + id;
+            });
+    }
 
     const handleAdd = () => {
         window.location.href = '/add';
@@ -75,6 +86,8 @@ function AgentView() {
                                             onClick={() => handleEdit(destination.id)}>Edit</Button>
                                     <Button variant="contained" color="secondary"
                                             onClick={() => handleDelete(destination.id)}>Delete</Button>
+                                    <Button variant="contained" color="success"
+                                            onClick={() => handleViewReservations(destination.id)}>View reservations</Button>
                                 </TableCell>
                             </TableRow>
                         ))}

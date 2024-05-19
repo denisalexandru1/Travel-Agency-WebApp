@@ -19,7 +19,7 @@ function EditDestination() {
     }
 
     const handleUpdate = () => {
-        fetch('http://localhost:5000/destination/update/' + destinationId, {
+        fetch('https://localhost:5000/destination/update/' + destinationId, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

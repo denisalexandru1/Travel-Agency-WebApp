@@ -14,9 +14,13 @@ function Destinations() {
     const [startDate, setStartDate] = React.useState(null);
     const [endDate, setEndDate] = React.useState(null);
     const [destinationsArray, setDestinationsArray] = React.useState([]);
+    const [destinationAvailabilityMap] = React.useState({});
+    const [dateDaysDifference, setDateDaysDifference] = React.useState(0);
+    const [user, setUser] = React.useState(JSON.parse(localStorage.getItem('user')));
 
     const handleStartDateChange = (date) => {
         setStartDate(date);
+        console.log("start: " + startDate)
         if (endDate && date > endDate) {
             setEndDate(date);
         }
@@ -24,10 +28,61 @@ function Destinations() {
 
     const handleEndDateChange = (date) => {
         setEndDate(date);
+        console.log("end: " + endDate);
         if (startDate && date < startDate) {
             setStartDate(date);
         }
     };
+
+    const handleCheckAvailability = () => {
+        destinationsArray.forEach((destination) => {
+            fetch('https://localhost:5000/destination/check-availability', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    destination_id: destination.id,
+                    start_date: startDate.toISOString().split('T')[0],
+                    end_date: endDate.toISOString().split('T')[0]
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    destinationAvailabilityMap[destination.id] = data["is_available"]
+                });
+        });
+        setDateDaysDifference(endDate.diff(startDate, 'days'));
+        console.log(dateDaysDifference);
+        console.log(destinationAvailabilityMap);
+    }
+
+    const handleBook = (destinationId, totalPrice) => {
+        if (user == null) {
+            alert("You need to be logged in to book a destination");
+            window.location.href = "/login";
+        }
+
+        return () => {
+            fetch('https://localhost:5000/reservation/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    destination_id: destinationId,
+                    user_id: user.id,
+                    start_date: startDate.toISOString().split('T')[0],
+                    end_date: endDate.toISOString().split('T')[0],
+                    total_price: totalPrice
+                })
+            })
+                .then(() => {
+                    alert("Booking successful");
+                    window.location.href = "/";
+                });
+        }
+    }
 
     useEffect(() => {
         // check if the path ends in /destinations and if it doesn't, get the string after /destinations/
@@ -35,16 +90,12 @@ function Destinations() {
         const destinationLocation = window.location.pathname.endsWith("/destinations") ? "" : window.location.pathname.split("/destinations/")[1];
 
         // get all the destinations from the database
-        fetch("http://localhost:5000/destination/get/" + destinationLocation)
+        fetch("https://localhost:5000/destination/get/" + destinationLocation)
             .then((response) => response.json())
             .then((data) => {
                 setDestinationsArray(data);
             })
     }, []);
-
-    // useEffect(() => {
-    //     console.log(destinationsArray);
-    // }, [destinationsArray]);
 
     return (
         <div>
@@ -62,6 +113,11 @@ function Destinations() {
                             <DatePicker label="Pick your end date" value={endDate} onChange={handleEndDateChange} />
                         </DemoContainer>
                     </LocalizationProvider>
+                </div>
+                <div style={{ display: "flex", justifyContent: "flex-start", marginTop: "20px", width: 690 }}>
+                    <Button variant="contained" color="primary" onClick={handleCheckAvailability}>
+                        Check availability
+                    </Button>
                 </div>
             </Grid>
             <Grid container direction="row" justifyContent="space-evenly" alignItems="center">
@@ -82,10 +138,10 @@ function Destinations() {
                                     {destination.description}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    Price: {destination.price}$
+                                    Price/night: {destination.price}$
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    Free spots: {destination.slots}
+                                    Total spots: {destination.slots}
                                 </Typography>
                                 {destination.is_special_offer ?
                                     <>
@@ -93,10 +149,20 @@ function Destinations() {
                                             Special offer!
                                         </Typography>
                                         <Typography variant="body2" color="text.secondary">
-                                            Book now for the special price: {destination.special_price}$
+                                            Special price/night: {destination.special_price}$
                                         </Typography>
                                     </>
                                     : null
+                                }
+                                {destinationAvailabilityMap[destination.id] &&
+                                    (() => {
+                                        const finalPrice = destination.is_special_offer ? (destination.special_price * dateDaysDifference) : (destination.price * dateDaysDifference);
+                                        return (
+                                            <Button variant="contained" color="primary" onClick={handleBook(destination.id, finalPrice)}>
+                                                Book now for {finalPrice}$
+                                            </Button>
+                                        );
+                                    })()
                                 }
                             </CardContent>
                         </CardActionArea>

@@ -30,7 +30,7 @@ function Offers() {
     };
 
     useEffect(() => {
-        fetch("http://localhost:5000/destination/get/special-offers")
+        fetch("https://localhost:5000/destination/get/special-offers")
             .then((response) => response.json())
             .then((data) => {
                 setDestinationsArray(data);

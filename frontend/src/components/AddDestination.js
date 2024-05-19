@@ -14,7 +14,7 @@ function AddDestination() {
     const [specialPrice, setSpecial_Price] = React.useState('');
 
     const handleAdd = () => {
-        fetch('http://localhost:5000/destination/add', {
+        fetch('https://localhost:5000/destination/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
